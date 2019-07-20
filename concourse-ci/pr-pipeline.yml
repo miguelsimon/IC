@@ -26,9 +26,6 @@ jobs:
   - get: IC
     trigger: true
     version: every
-  - get: IC_master
-    trigger: true
-    version: every
   - put: IC
     params:
       path: IC
@@ -64,9 +61,6 @@ jobs:
       - unit-tests
   - get: IC_master
     trigger: true
-    version: every
-    passed:
-      - unit-tests
   - put: IC
     params:
       path: IC
