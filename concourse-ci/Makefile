@@ -22,7 +22,7 @@ set_local_pr_pipeline: credentials/github_access_token
 	fly -t local set-pipeline \
     --pipeline IC-pull-request \
     --config pr-pipeline.yml \
-		-v FAKE_CLUSTER_SSH_PRIVATE_KEY=fake_key_bro \
+		-v "SSH_PRIVATE_KEY=$$(cat credentials/key_concourse)" \
 		-v github_access_token=$$(cat credentials/github_access_token)
 
 .PHONY: set_build_pipeline
@@ -37,7 +37,7 @@ set_pr_pipeline: credentials/github_access_token
 	fly -t remote set-pipeline \
     --pipeline IC-pull-request \
     --config pr-pipeline.yml \
-		-v FAKE_CLUSTER_SSH_PRIVATE_KEY=fake_key_bro \
+		-v "SSH_PRIVATE_KEY=$$(cat credentials/key_concourse)" \
 		-v github_access_token=$$(cat credentials/github_access_token)
 
 

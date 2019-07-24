@@ -3,6 +3,7 @@
   * [Online demo version](#online-demo-version)
   * [Walkthrough for executing concourse locally](#walkthrough-for-executing-concourse-locally)
   * [Running on a server](#running-on-a-server)
+  * [fly execute for cluster tests](#fly-execute-for-cluster-tests)
 
 # Overview
 
@@ -66,3 +67,16 @@ Birds-eye overview of the current setup:
 * The deploy is specified in docker compose; I'm running postgres, concourse, an nginx frontend and [certbot](https://certbot.eff.org/) to set up free certificates via letsencrypt.
 * I'm running it on a trial google compute engine VM (google cloud is a very sane cloud provider when compared to others *cough* amazon *cough*)
 * access control is via username - password now, we'd delegate access control to github via oauth to avoid operational hassles
+
+## fly execute for cluster tests
+
+To test the `cluster-tests.sh` script it's convenient to launch it using local content; you can do this via fly execute (if you've got the proper credentials); the following example uses the current IC checkout to populate both the IC and IC_master inputs to the script:
+
+```
+SSH_PRIVATE_KEY=$(cat credentials/key_concourse) \
+	fly -t local execute \
+		--include-ignored \
+		--input IC=../ \
+  	--input IC_master=../ \
+		--config cluster-tests.yml
+```

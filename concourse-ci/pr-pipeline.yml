@@ -33,8 +33,6 @@ jobs:
       context: unit-tests
   - task: unit-tests
     file: IC/concourse-ci/run-tests.yml
-    vars:
-      FAKE_CLUSTER_SSH_PRIVATE_KEY: ((FAKE_CLUSTER_SSH_PRIVATE_KEY))
   on_success:
     do:
       - put: IC
@@ -69,7 +67,7 @@ jobs:
   - task: cluster-tests
     file: IC/concourse-ci/cluster-tests.yml
     vars:
-      FAKE_CLUSTER_SSH_PRIVATE_KEY: ((FAKE_CLUSTER_SSH_PRIVATE_KEY))
+      SSH_PRIVATE_KEY: ((SSH_PRIVATE_KEY))
   on_success:
     do:
       - put: IC

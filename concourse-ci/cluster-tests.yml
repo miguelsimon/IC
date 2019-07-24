@@ -10,4 +10,4 @@ run:
   path: bash
   args: [ "IC/concourse-ci/cluster-tests.sh" ]
 params:
-  FAKE_CLUSTER_SSH_PRIVATE_KEY: ((FAKE_CLUSTER_SSH_PRIVATE_KEY))
+  SSH_PRIVATE_KEY:
