@@ -66,7 +66,7 @@ jobs:
       context: cluster-tests
   - task: cluster-tests
     file: IC/concourse-ci/cluster-tests.yml
-    vars:
+    params:
       SSH_PRIVATE_KEY: ((SSH_PRIVATE_KEY))
   on_success:
     do:

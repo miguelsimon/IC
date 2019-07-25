@@ -4,12 +4,12 @@ set -ex
 
 # error out if the credentials haven't been provided
 
-apt-get update && apt install -y curl rsync ssh
-
 : "${SSH_PRIVATE_KEY:?}"
 
 echo "$SSH_PRIVATE_KEY" > ssh_key
 chmod 600 ssh_key
+
+apt-get update && apt install -y curl rsync ssh
 
 # test access to the cluster
 ssh -t \
