@@ -1,9 +1,11 @@
 * [Overview](#overview)
 * [Usage](#usage)
-  * [Online demo version](#online-demo-version)
-  * [Walkthrough for executing concourse locally](#walkthrough-for-executing-concourse-locally)
-  * [Running on a server](#running-on-a-server)
-  * [fly execute for cluster tests](#fly-execute-for-cluster-tests)
+  * [Concourse](#concourse)
+    * [Online demo version](#online-demo-version)
+    * [Walkthrough for executing concourse locally](#walkthrough-for-executing-concourse-locally)
+    * [Running on a server](#running-on-a-server)
+    * [fly execute for cluster tests](#fly-execute-for-cluster-tests)
+    * [building the job artifact](#building-the-job-artifact)
 
 # Overview
 
@@ -27,7 +29,9 @@ I left a placeholder script to represent job submission/result gathering from th
 
 # Usage
 
-## Online demo version
+## Concourse
+
+### Online demo version
 
 The concourse interface is up at [https://ci.ific-invisible-cities.com/](https://ci.ific-invisible-cities.com/).
 
@@ -35,9 +39,9 @@ The easiest way to understand what's going on is just to open a test PR to the m
 * Merges are disallowed until the build passes
 * At least 1 review is required.
 
-## Walkthrough for executing concourse locally
+### Walkthrough for executing concourse locally
 
-### Prerequisites
+#### Prerequisites
 
 * [docker-compose](https://www.digitalocean.com/community/tutorials/how-to-install-docker-compose-on-ubuntu-18-04)
 * make ie if you're on some unix flavor you're fine
@@ -55,7 +59,7 @@ These steps must be executed from within this directory:
 
 Voilà, you can now unpause the pipeline. The invisible cities tests should run (I'm basically doing the same thing your travis CI is doing).
 
-## Running on a server
+### Running on a server
 
 I've set it up at [https://ci.ific-invisible-cities.com/](https://ci.ific-invisible-cities.com/).
 
@@ -68,7 +72,7 @@ Birds-eye overview of the current setup:
 * I'm running it on a trial google compute engine VM (google cloud is a very sane cloud provider when compared to others *cough* amazon *cough*)
 * access control is via username - password now, we'd delegate access control to github via oauth to avoid operational hassles
 
-## fly execute for cluster tests
+### fly execute for cluster tests
 
 To test the `cluster-tests.sh` script it's convenient to launch it using local content; you can do this via fly execute (if you've got the proper credentials); the following example uses the current IC checkout to populate both the IC and IC_master inputs to the script:
 
@@ -79,4 +83,36 @@ SSH_PRIVATE_KEY=$(cat credentials/key_concourse) \
 		--input IC=../ \
   	--input IC_master=../ \
 		--config cluster-tests.yml
+```
+
+## Job specification
+
+There's a lot of configuration involved in managing the tests and it's probably going to get worse when we want to test against other conda versions, add fancier tests, etc. Life's too short to deal with this by hand.
+
+It's a pretty heavyweight approach but it's the fastest way, because:
+* I use the python typesystem to catch bugs
+* when things get complicated I can easily do fancy stuff like automatically calculate job dependencies and express these to pbs to parallelize this as much as possible
+
+The approach I'm taking is:
+1. specify the desired configuration in a python dsl, see [assemble_jobs/miguel_jobs.py](assemble_jobs/miguel_jobs.py) for an example (work in progress as I don't fully understand the IC system yet)
+2. use the specification to build a directory locally with all the necessary stuff (scripts, checked out source etc) so it can be inspected
+3. push the directory to the cluster, submit the jobs
+
+### run tests
+
+`make test`
+
+### command line usage
+
+Let's assume you've got a checkout of IC in `~/IC_master`. You can compile the artifact (using the same directory for both the PR and master version) like so:
+
+```
+mkdir job
+
+env/bin/python -m assemble_jobs.miguel_jobs \
+  --master_dir ~/IC_master \
+  --pr_dir ~/IC_master \
+  --city_conf_dir conf \
+  --target_dir job
+
 ```
