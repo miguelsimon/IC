@@ -6,6 +6,9 @@
     * [Running on a server](#running-on-a-server)
     * [fly execute for cluster tests](#fly-execute-for-cluster-tests)
     * [building the job artifact](#building-the-job-artifact)
+  * [Job specification](#job-specification)
+    * [run tests](#run-tests)
+    * [command line usage](#command-line-usage)
 
 # Overview
 
@@ -107,6 +110,7 @@ The approach I'm taking is:
 Let's assume you've got a checkout of IC in `~/IC_master`. You can compile the artifact (using the same directory for both the PR and master version) like so:
 
 ```
+make env_ok #ensure python env is up
 mkdir job
 
 env/bin/python -m assemble_jobs.miguel_jobs \
@@ -114,5 +118,4 @@ env/bin/python -m assemble_jobs.miguel_jobs \
   --pr_dir ~/IC_master \
   --city_conf_dir conf \
   --target_dir job
-
 ```
