@@ -82,9 +82,21 @@ class LocalAssembly(NamedTuple):
 
     # TODO: add job chaining script to tie these together see https://www.nics.tennessee.edu/computing-resources/running-jobs/job-chaining
     def assemble_jobs(self, jobs: List[CityJob], target_dir: str) -> None:
+        chain_sh = ["#!/bin/bash"]
 
         for i, job in enumerate(jobs):
-            name = "job_{0}"
-            path = os.path.join(target_dir, "jobs", "{0}.sh".format(name))
+            path = os.path.join(target_dir, "jobs", "job_{0}.sh".format(i))
             with open(path, "w") as f:
                 f.write(job.to_sh())
+
+            if i == 0:
+                line = "job_0=$(qsub jobs/job_0.sh)"
+            else:
+                line = "job_{0}=$(qsub -W depend=afterok:$job_{1} jobs/job_{0}.sh)".format(
+                    i, i - 1
+                )
+            chain_sh.append(line)
+
+        chain_sh.append("")
+        with open(os.path.join(target_dir, "chain.sh"), "w") as f:
+            f.write("\n".join(chain_sh))
