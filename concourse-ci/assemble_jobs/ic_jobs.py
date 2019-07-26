@@ -2,7 +2,7 @@ import os
 import shutil
 from typing import List, NamedTuple
 
-CITY_JOB_TEMPLATE = """
+CITY_JOB_TEMPLATE = """#!/bin/bash
 source {bashrc}
 source {conda_sh}
 conda activate {conda_activate}

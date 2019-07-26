@@ -6,8 +6,8 @@ config = Config(
     bashrc="/home/icdev/.bashrc",
     conda_sh="/home/icdev/miniconda/etc/profile.d/conda.sh",
     conda_activate="IC-3.7-2018-11-14",
-    conda_lib="home/icdev/miniconda/lib",
-    remote_dir="home/data_extra2/icdev/miguel_scratch",
+    conda_lib="/home/icdev/miniconda/lib",
+    remote_dir="/data_extra2/icdev/miguel_scratch",
 )
 
 specs = [
