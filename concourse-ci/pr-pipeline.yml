@@ -16,6 +16,12 @@ resources:
 - name: IC_master
   type: git
   source:
+    uri: https://github.com/nextic/IC.git
+    branch: master
+
+- name: IC_operations
+  type: git
+  source:
     uri: https://github.com/miguelsimon/IC.git
     branch: concourse-ci
 
@@ -53,12 +59,11 @@ jobs:
   serial: true
   plan:
   - get: IC
-    trigger: true
     version: every
     passed:
       - unit-tests
   - get: IC_master
-    trigger: true
+  - get: IC_operations
   - put: IC
     params:
       path: IC

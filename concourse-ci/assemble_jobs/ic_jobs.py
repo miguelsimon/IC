@@ -18,6 +18,28 @@ city {city} \\
     {conf_path}
 """
 
+CHAIN_TEMPLATE = """#!/bin/bash
+
+function echo_info () {{
+    echo
+    echo "`qstat`"
+    echo
+}}
+
+(cd master && git lfs pull && source manage.sh work_in_python_version_no_tests 3.7)
+(cd pr && git lfs pull && source manage.sh work_in_python_version_no_tests 3.7)
+
+{job_chain}
+
+echo_info
+status=`qstat | grep ${last_job}`
+while [ -n "$status" ] # while $status is not empty
+    do
+	sleep 10
+    echo_info
+	status=`qstat | grep ${last_job}`
+    done
+"""
 
 class CityJob(NamedTuple):
     city: str
@@ -82,7 +104,7 @@ class LocalAssembly(NamedTuple):
 
     # TODO: add job chaining script to tie these together see https://www.nics.tennessee.edu/computing-resources/running-jobs/job-chaining
     def assemble_jobs(self, jobs: List[CityJob], target_dir: str) -> None:
-        chain_sh = ["#!/bin/bash"]
+        job_lines = []
 
         for i, job in enumerate(jobs):
             path = os.path.join(target_dir, "jobs", "job_{0}.sh".format(i))
@@ -95,8 +117,14 @@ class LocalAssembly(NamedTuple):
                 line = "job_{0}=$(qsub -W depend=afterok:$job_{1} jobs/job_{0}.sh)".format(
                     i, i - 1
                 )
-            chain_sh.append(line)
+            job_lines.append(line)
 
-        chain_sh.append("")
+        job_chain = "\n".join(job_lines)
+
+        chain_sh = CHAIN_TEMPLATE.format(**dict(
+            job_chain = job_chain,
+            last_job = 'job_{0}'.format(i)
+        ))
+
         with open(os.path.join(target_dir, "chain.sh"), "w") as f:
-            f.write("\n".join(chain_sh))
+            f.write(chain_sh)

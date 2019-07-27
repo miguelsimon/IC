@@ -6,8 +6,9 @@ image_resource:
 inputs:
   - name: IC
   - name: IC_master
+  - name: IC_operations
 run:
   path: bash
-  args: [ "IC/concourse-ci/cluster-tests.sh" ]
+  args: [ "IC_operations/concourse-ci/cluster-tests.sh" ]
 params:
   SSH_PRIVATE_KEY: ((SSH_PRIVATE_KEY))

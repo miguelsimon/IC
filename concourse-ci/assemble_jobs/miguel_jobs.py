@@ -18,9 +18,22 @@ specs = [
         ic_version="master",
     ),
     CitySpec(
+        city="dorothea",
+        input_path="/data_extra2/icdev/miguel_scratch/outputs/master_run_6971_0009_trigger1_pmaps.h5",
+        output_path="/data_extra2/icdev/miguel_scratch/outputs/master_run_6971_0009_trigger1_kdst.h5",
+        ic_version="pr",
+    ),
+
+    CitySpec(
         city="irene",
         input_path="/data_extra2/mmkekic/example_inputs/run_6971_0009_trigger1_waveforms.h5",
         output_path="/data_extra2/icdev/miguel_scratch/outputs/pr_run_6971_0009_trigger1_pmaps.h5",
+        ic_version="pr",
+    ),
+    CitySpec(
+        city="dorothea",
+        input_path="/data_extra2/icdev/miguel_scratch/outputs/pr_run_6971_0009_trigger1_pmaps.h5",
+        output_path="/data_extra2/icdev/miguel_scratch/outputs/pr_run_6971_0009_trigger1_kdst.h5",
         ic_version="pr",
     ),
 ]

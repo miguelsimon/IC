@@ -77,14 +77,15 @@ Birds-eye overview of the current setup:
 
 ### fly execute for cluster tests
 
-To test the `cluster-tests.sh` script it's convenient to launch it using local content; you can do this via fly execute (if you've got the proper credentials); the following example uses the current IC checkout to populate both the IC and IC_master inputs to the script:
+To test the `cluster-tests.sh` script it's convenient to launch it using local content; you can do this via fly execute (if you've got the proper credentials); the following example uses an IC_master checkout to populate both the IC and IC_master inputs to the script:
 
 ```
 SSH_PRIVATE_KEY=$(cat credentials/key_concourse) \
 	fly -t local execute \
 		--include-ignored \
-		--input IC=../ \
-  	--input IC_master=../ \
+		--input IC=~/IC_master \
+  	--input IC_master=~/IC_master \
+    --input IC_operations=../ \
 		--config cluster-tests.yml
 ```
 
