@@ -20,6 +20,8 @@ city {city} \\
 
 CHAIN_TEMPLATE = """#!/bin/bash
 
+rm -f {all_ok_file}
+
 function echo_info () {{
     echo
     echo "`qstat`"
@@ -31,14 +33,29 @@ function echo_info () {{
 
 {job_chain}
 
+all_ok=$(qsub -W depend=afterok:${last_job} jobs/all_ok.sh)
+
 echo_info
-status=`qstat | grep ${last_job}`
+status=`qstat | grep $all_ok`
 while [ -n "$status" ] # while $status is not empty
     do
-	sleep 10
+    sleep 10
     echo_info
-	status=`qstat | grep ${last_job}`
+    status=`qstat | grep $all_ok`
     done
+
+
+if [[ -f {all_ok_file} ]]; then
+    echo "all ok"
+else
+    echo "not all ok"
+    exit 1
+fi
+
+"""
+
+ALL_OK_TEMPLATE = """#!/bin/bash
+touch {all_ok_file}
 """
 
 class CityJob(NamedTuple):
@@ -102,8 +119,11 @@ class LocalAssembly(NamedTuple):
         shutil.copytree(self.master_path, os.path.join(target_dir, "master"))
         shutil.copytree(self.pr_path, os.path.join(target_dir, "pr"))
 
-    # TODO: add job chaining script to tie these together see https://www.nics.tennessee.edu/computing-resources/running-jobs/job-chaining
     def assemble_jobs(self, jobs: List[CityJob], target_dir: str) -> None:
+
+        #TODO: factor out this hardcode
+        all_ok_file = "/data_extra2/icdev/miguel_scratch/all_ok"
+
         job_lines = []
 
         for i, job in enumerate(jobs):
@@ -123,8 +143,15 @@ class LocalAssembly(NamedTuple):
 
         chain_sh = CHAIN_TEMPLATE.format(**dict(
             job_chain = job_chain,
-            last_job = 'job_{0}'.format(i)
+            last_job = 'job_{0}'.format(i),
+            all_ok_file = all_ok_file
         ))
 
         with open(os.path.join(target_dir, "chain.sh"), "w") as f:
             f.write(chain_sh)
+
+        with open(os.path.join(target_dir, "jobs", "all_ok.sh"), "w") as f:
+            all_ok_sh = ALL_OK_TEMPLATE.format(**dict(
+                all_ok_file = all_ok_file
+            ))
+            f.write(all_ok_sh)
