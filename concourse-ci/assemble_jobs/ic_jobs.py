@@ -58,6 +58,7 @@ ALL_OK_TEMPLATE = """#!/bin/bash
 touch {all_ok_file}
 """
 
+
 class CityJob(NamedTuple):
     city: str
     input_path: str
@@ -121,7 +122,7 @@ class LocalAssembly(NamedTuple):
 
     def assemble_jobs(self, jobs: List[CityJob], target_dir: str) -> None:
 
-        #TODO: factor out this hardcode
+        # TODO: factor out this hardcode
         all_ok_file = "/data_extra2/icdev/miguel_scratch/all_ok"
 
         job_lines = []
@@ -141,17 +142,17 @@ class LocalAssembly(NamedTuple):
 
         job_chain = "\n".join(job_lines)
 
-        chain_sh = CHAIN_TEMPLATE.format(**dict(
-            job_chain = job_chain,
-            last_job = 'job_{0}'.format(i),
-            all_ok_file = all_ok_file
-        ))
+        chain_sh = CHAIN_TEMPLATE.format(
+            **dict(
+                job_chain=job_chain,
+                last_job="job_{0}".format(i),
+                all_ok_file=all_ok_file,
+            )
+        )
 
         with open(os.path.join(target_dir, "chain.sh"), "w") as f:
             f.write(chain_sh)
 
         with open(os.path.join(target_dir, "jobs", "all_ok.sh"), "w") as f:
-            all_ok_sh = ALL_OK_TEMPLATE.format(**dict(
-                all_ok_file = all_ok_file
-            ))
+            all_ok_sh = ALL_OK_TEMPLATE.format(**dict(all_ok_file=all_ok_file))
             f.write(all_ok_sh)

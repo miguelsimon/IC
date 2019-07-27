@@ -23,7 +23,6 @@ specs = [
         output_path="/data_extra2/icdev/miguel_scratch/outputs/master_run_6971_0009_trigger1_kdst.h5",
         ic_version="master",
     ),
-
     CitySpec(
         city="irene",
         input_path="/data_extra2/mmkekic/example_inputs/run_6971_0009_trigger1_waveforms.h5",

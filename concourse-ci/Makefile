@@ -48,13 +48,6 @@ fly_execute:
 		--input IC=../ \
 		--config run-tests.yml
 
-.PHONY: set_local_build_pipeline
-set_local_build_pipeline:
-	fly -t local set-pipeline \
-    --pipeline IC-build \
-    --config build-pipeline.yml \
-		-v FAKE_CLUSTER_SSH_PRIVATE_KEY=fake_key_bro
-
 .PHONY: set_local_pr_pipeline
 set_local_pr_pipeline: credentials/github_access_token credentials/key_concourse
 	fly -t local set-pipeline \
@@ -62,13 +55,6 @@ set_local_pr_pipeline: credentials/github_access_token credentials/key_concourse
     --config pr-pipeline.yml \
 		-v "SSH_PRIVATE_KEY=$$(cat credentials/key_concourse)" \
 		-v github_access_token=$$(cat credentials/github_access_token)
-
-.PHONY: set_build_pipeline
-set_build_pipeline:
-	fly -t remote set-pipeline \
-    --pipeline IC-build \
-    --config build-pipeline.yml \
-		-v FAKE_CLUSTER_SSH_PRIVATE_KEY=fake_key_bro
 
 .PHONY: set_pr_pipeline
 set_pr_pipeline: credentials/github_access_token credentials/key_concourse

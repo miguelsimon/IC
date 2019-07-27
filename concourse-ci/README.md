@@ -20,15 +20,10 @@ This sets up an example CI pipeline for the invisible cities project. The idea i
 2. if unit tests pass, the CI submits a job to the majorana cluster that performs sanity checks; a report is generated and put somewhere (eg. a gce bucket)
 3. If the sanity checks also pass, the CI marks the PR as approved in github and the merge can now be performed.
 
-I've got 2 pipelines, which is what I generally do:
-* the PR pipeline builds pull requests and blocks merges of failed PRs
-* another pipeline builds a branch every 24 hours; this way changes in dependencies that break your build get caught early.
-
 I set this up using [concourse](https://concourse-ci.org/) because:
 * as a side effect of dragging my current company's devs into the 19th century, I can now set up continuous integration environments based on concourse in my sleep
 * concourse is awesome; it does have a learning curve (as do all CI tools) but it's very flexible and forces you to decouple stuff in a way that makes deploying in cloud environments easy.
 
-I left a placeholder script to represent job submission/result gathering from the cluster; this basically means automating via bash whatever you guys do to launch a job and collect the results.
 
 # Usage
 
@@ -57,10 +52,10 @@ These steps must be executed from within this directory:
 3. download the [fly cli](https://concourse-ci.org/fly.html) from your local concourse installation
 4. log in to concourse via the command line:
   `fly -t local login -c http://localhost:8080`
-5. push the build pipeline (the other requires a credential you don't have):
-  `make set_local_build_pipeline`
+5. push the pr pipeline (you'll need appropriate credentials)
+  `make set_local_pr_pipeline`
 
-Voilà, you can now unpause the pipeline. The invisible cities tests should run (I'm basically doing the same thing your travis CI is doing).
+Voilà, you can now unpause the pipeline.
 
 ### Running on a server
 
