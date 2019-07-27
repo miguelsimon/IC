@@ -28,3 +28,9 @@ rsync \
   -vzr \
   job/* \
   icdev@majorana1.ific.uv.es:/data_extra2/icdev/miguel_scratch/
+
+ssh \
+  -i ../../ssh_key \
+  -o StrictHostKeyChecking=no \
+  icdev@majorana1.ific.uv.es \
+  "cd /data_extra2/icdev/miguel_scratch && bash chain.sh"

@@ -21,7 +21,7 @@ specs = [
         city="dorothea",
         input_path="/data_extra2/icdev/miguel_scratch/outputs/master_run_6971_0009_trigger1_pmaps.h5",
         output_path="/data_extra2/icdev/miguel_scratch/outputs/master_run_6971_0009_trigger1_kdst.h5",
-        ic_version="pr",
+        ic_version="master",
     ),
 
     CitySpec(
