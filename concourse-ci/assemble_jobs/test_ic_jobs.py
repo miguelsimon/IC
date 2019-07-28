@@ -2,7 +2,7 @@ import os
 import tempfile
 import unittest
 
-from assemble_jobs.ic_jobs import CitySpec, Config, LocalAssembly
+from assemble_jobs.ic_jobs import CitySpec, ComparePmapSpec, Config, LocalAssembly
 
 
 class Test(unittest.TestCase):
@@ -27,6 +27,19 @@ class Test(unittest.TestCase):
             city="irene",
             input_path="/data_extra2/mmkekic/example_inputs/run_6971_0009_trigger1_waveforms.h5",
             output_path="/data_extra2/icdev/miguel_scratch/outputs/run_6971_0009_trigger1_pmaps.h5",
+            ic_version="master",
+        )
+
+        job = spec.get_job(config)
+        print(job)
+        print(job.to_sh())
+
+    def test_ComparePmapSpec_ComparePmapJob(self):
+        config = self.get_config()
+        spec = ComparePmapSpec(
+            master_path="/data_extra2/icdev/miguel_scratch/outputs/master_run_6971_0009_trigger1_pmaps.h5",
+            pr_path="/data_extra2/icdev/miguel_scratch/outputs/pr_run_6971_0009_trigger1_pmaps.h5",
+            output_path="/data_extra2/icdev/miguel_scratch/outputs/compare_run_6971_0009_trigger1_pmaps.txt",
             ic_version="master",
         )
 

@@ -1,22 +1,9 @@
 import os
 import shutil
-from typing import List, NamedTuple
+from typing import NamedTuple, Sequence, Union
 
-CITY_JOB_TEMPLATE = """#!/bin/bash
-source {bashrc}
-source {conda_sh}
-conda activate {conda_activate}
-export LD_LIBRARY_PATH="{conda_lib}:$LD_LIBRARY_PATH"
-export ICTDIR={ictdir}
-export ICDIR="$ICTDIR/invisible_cities"
-export PATH="$ICTDIR/bin:$PATH"
-export PYTHONPATH="$ICTDIR:$PYTHONPATH"
-
-city {city} \\
-    -i {input_path} \\
-    -o {output_path}  \\
-    {conf_path}
-"""
+from assemble_jobs.city_job import CityJob
+from assemble_jobs.compare_pmap import ComparePmapJob
 
 CHAIN_TEMPLATE = """#!/bin/bash
 
@@ -59,21 +46,6 @@ touch {all_ok_file}
 """
 
 
-class CityJob(NamedTuple):
-    city: str
-    input_path: str
-    output_path: str
-    conf_path: str
-    ictdir: str
-    bashrc: str
-    conda_sh: str
-    conda_activate: str
-    conda_lib: str
-
-    def to_sh(self) -> str:
-        return CITY_JOB_TEMPLATE.format(**self._asdict())
-
-
 class Config(NamedTuple):
     bashrc: str
     conda_sh: str
@@ -109,6 +81,30 @@ class CitySpec(NamedTuple):
         )
 
 
+class ComparePmapSpec(NamedTuple):
+    master_path: str
+    pr_path: str
+    output_path: str
+    ic_version: str
+
+    def get_job(self, config: Config) -> ComparePmapJob:
+        return ComparePmapJob(
+            master_path=self.master_path,
+            pr_path=self.pr_path,
+            output_path=self.output_path,
+            ictdir=config.get_ictdir(self.ic_version),
+            bashrc=config.bashrc,
+            conda_sh=config.conda_sh,
+            conda_activate=config.conda_activate,
+            conda_lib=config.conda_lib,
+        )
+
+
+Spec = Union[CitySpec, ComparePmapSpec]
+
+Job = Union[CityJob, ComparePmapJob]
+
+
 class LocalAssembly(NamedTuple):
     master_path: str
     pr_path: str
@@ -120,7 +116,7 @@ class LocalAssembly(NamedTuple):
         shutil.copytree(self.master_path, os.path.join(target_dir, "master"))
         shutil.copytree(self.pr_path, os.path.join(target_dir, "pr"))
 
-    def assemble_jobs(self, jobs: List[CityJob], target_dir: str) -> None:
+    def assemble_jobs(self, jobs: Sequence[Job], target_dir: str) -> None:
 
         # TODO: factor out this hardcode
         all_ok_file = "/data_extra2/icdev/miguel_scratch/all_ok"
