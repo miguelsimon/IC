@@ -10,13 +10,13 @@ export ICDIR="$ICTDIR/invisible_cities"
 export PATH="$ICTDIR/bin:$PATH"
 export PYTHONPATH="$ICTDIR:$PYTHONPATH"
 
-report=$(h5diff -c {master_path} {pr_path})
+mkdir {output_path}
+
+h5diff -c {master_path} {pr_path} > {output_path}/h5diff.txt
 if [ $? -eq 0 ]; then
-    echo "{master_path} {pr_path} ok" > {output_path}
+    echo "ok" > {output_path}/status
 else
-    echo "{master_path} {pr_path} DIFFER" > {output_path}
-    echo $'\\n' >> {output_path}
-    echo "$report" >> {output_path}
+    echo "DIFFERENCES" > {output_path}/status
 fi
 """
 

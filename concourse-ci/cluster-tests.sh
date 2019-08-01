@@ -26,6 +26,7 @@ python3 -m assemble_jobs.miguel_jobs \
 rsync \
   -e "ssh -i ../../ssh_key -o StrictHostKeyChecking=no" \
   -vzr \
+  --delete \
   job/* \
   icdev@majorana1.ific.uv.es:/data_extra2/icdev/miguel_scratch/
 

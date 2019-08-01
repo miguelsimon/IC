@@ -39,7 +39,7 @@ specs: List[Spec] = [
     ComparePmapSpec(
         master_path="/data_extra2/icdev/miguel_scratch/outputs/master_run_6971_0009_trigger1_pmaps.h5",
         pr_path="/data_extra2/icdev/miguel_scratch/outputs/pr_run_6971_0009_trigger1_pmaps.h5",
-        output_path="/data_extra2/icdev/miguel_scratch/outputs/compare_run_6971_0009_trigger1_pmaps.txt",
+        output_path="/data_extra2/icdev/miguel_scratch/comparison_outputs/run_6971_0009_trigger1_pmaps",
         ic_version="master",
     ),
 ]
