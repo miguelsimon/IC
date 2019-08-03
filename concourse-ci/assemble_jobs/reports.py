@@ -81,6 +81,7 @@ class ReportSpec(NamedTuple):
 
     def get_report(self):
         results = [cmp_spec.get_result() for cmp_spec in self.specs]
+        results.sort(key=lambda res: (res.status, res.name))
         return Report(results)
 
 
@@ -118,8 +119,8 @@ class Test(unittest.TestCase):
 
             report = report_spec.get_report()
 
-            self.assertEqual(report.results[0].status, "ok")
-            self.assertEqual(report.results[1].status, "bad_output")
+            self.assertEqual(report.results[1].status, "ok")
+            self.assertEqual(report.results[0].status, "bad_output")
 
             print(report.to_txt())
             print(report.to_html())

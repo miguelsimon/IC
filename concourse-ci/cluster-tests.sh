@@ -9,7 +9,7 @@ set -ex
 echo "$SSH_PRIVATE_KEY" > ssh_key
 chmod 600 ssh_key
 
-apt-get update && apt install -y curl rsync ssh python3
+apt-get update && apt install -y curl rsync ssh python3 python3-pip
 
 # IC holds the PR
 # IC_master holds the reference version
@@ -17,10 +17,10 @@ apt-get update && apt install -y curl rsync ssh python3
 
 cd IC_operations/concourse-ci
 mkdir job
-python3 -m venv env
-env/bin/pip install -r requirements.txt
 
-env/bin/python -m assemble_jobs.production_jobs \
+pip3 install -r requirements.txt
+
+python3 -m assemble_jobs.production_jobs \
   --master_dir ../../IC_master \
   --pr_dir ../../IC \
   --city_conf_dir conf \
@@ -45,6 +45,6 @@ rsync \
   icdev@majorana1.ific.uv.es:/data_extra2/icdev/miguel_scratch/comparison_outputs \
   .
 
-env/bin/python -m assemble_jobs.reports \
+python3 -m assemble_jobs.reports \
   --output_dir comparison_outputs \
   --format txt
