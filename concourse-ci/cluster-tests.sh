@@ -17,7 +17,7 @@ apt-get update && apt install -y curl rsync ssh python3
 
 cd IC_operations/concourse-ci
 mkdir job
-python3 -m assemble_jobs.miguel_jobs \
+python3 -m assemble_jobs.production_jobs \
   --master_dir ../../IC_master \
   --pr_dir ../../IC \
   --city_conf_dir conf \
@@ -35,3 +35,12 @@ ssh \
   -o StrictHostKeyChecking=no \
   icdev@majorana1.ific.uv.es \
   "cd /data_extra2/icdev/miguel_scratch && bash chain.sh"
+
+rsync \
+  -e "ssh -i ../../ssh_key -o StrictHostKeyChecking=no" \
+  -vzr \
+  icdev@majorana1.ific.uv.es:/data_extra2/icdev/miguel_scratch/comparison_outputs \
+  .
+
+python3 -m assemble_jobs.reports \
+  --output_dir comparison_outputs

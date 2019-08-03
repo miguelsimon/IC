@@ -76,12 +76,12 @@ To test the `cluster-tests.sh` script it's convenient to launch it using local c
 
 ```
 SSH_PRIVATE_KEY=$(cat credentials/key_concourse) \
-	fly -t local execute \
-		--include-ignored \
-		--input IC=~/IC_master \
-  	--input IC_master=~/IC_master \
+  fly -t remote execute \
+    --include-ignored \
+    --input IC=~/IC_master \
+    --input IC_master=~/IC_master \
     --input IC_operations=../ \
-		--config cluster-tests.yml
+    --config cluster-tests.yml
 ```
 
 ## Job specification

@@ -113,6 +113,8 @@ class LocalAssembly(NamedTuple):
     def assemble_skeleton(self, config: Config, target_dir: str) -> None:
         os.mkdir(os.path.join(target_dir, "jobs"))
         os.mkdir(os.path.join(target_dir, "outputs"))
+        os.mkdir(os.path.join(target_dir, "outputs", "master"))
+        os.mkdir(os.path.join(target_dir, "outputs", "pr"))
         os.mkdir(os.path.join(target_dir, "comparison_outputs"))
 
         shutil.copytree(self.city_conf_dir, os.path.join(target_dir, "conf"))

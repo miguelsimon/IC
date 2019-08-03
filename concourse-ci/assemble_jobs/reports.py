@@ -1,3 +1,4 @@
+import argparse
 import os
 import tempfile
 import unittest
@@ -10,7 +11,7 @@ class Result(NamedTuple):
     output: str
 
     def to_txt(self):
-        return "Name: {0}\n\tstatus: {1}"
+        return "{0}\t{1}".format(self.name, self.status)
 
 
 class Report(NamedTuple):
@@ -45,6 +46,14 @@ class ReportSpec(NamedTuple):
         return Report(results)
 
 
+def dir_to_ReportSpec(target_dir: str) -> ReportSpec:
+    specs: List[CmpSpec] = []
+    for output in sorted(os.listdir(target_dir)):
+        path = os.path.join(target_dir, output)
+        specs.append(CmpSpec(output, path))
+    return ReportSpec(specs)
+
+
 def make_dummy_output(target_path, status, output):
     os.mkdir(target_path)
     status_path = os.path.join(target_path, "status")
@@ -75,3 +84,13 @@ class Test(unittest.TestCase):
             self.assertEqual(report.results[1].status, "bad_output")
 
             print(report.to_txt())
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--output_dir", type=str, required=True)
+    args = parser.parse_args()
+
+    report_spec = dir_to_ReportSpec(args.output_dir)
+    report = report_spec.get_report()
+    print(report.to_txt())
