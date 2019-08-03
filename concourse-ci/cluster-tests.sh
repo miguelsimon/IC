@@ -17,7 +17,10 @@ apt-get update && apt install -y curl rsync ssh python3
 
 cd IC_operations/concourse-ci
 mkdir job
-python3 -m assemble_jobs.production_jobs \
+python3 -m venv env
+env/bin/pip install -r requirements.txt
+
+env/bin/python -m assemble_jobs.production_jobs \
   --master_dir ../../IC_master \
   --pr_dir ../../IC \
   --city_conf_dir conf \
@@ -42,5 +45,6 @@ rsync \
   icdev@majorana1.ific.uv.es:/data_extra2/icdev/miguel_scratch/comparison_outputs \
   .
 
-python3 -m assemble_jobs.reports \
-  --output_dir comparison_outputs
+env/bin/python -m assemble_jobs.reports \
+  --output_dir comparison_outputs \
+  --format txt

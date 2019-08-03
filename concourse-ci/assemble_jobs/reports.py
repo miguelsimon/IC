@@ -4,6 +4,21 @@ import tempfile
 import unittest
 from typing import List, NamedTuple
 
+import yattag
+
+TOGGLE_JS = """
+<script>
+function toggle(elt) {
+  var x = document.getElementById(elt);
+  if (x.style.display === "none") {
+    x.style.display = "block";
+  } else {
+    x.style.display = "none";
+  }
+}
+</script>
+"""
+
 
 class Result(NamedTuple):
     name: str
@@ -11,7 +26,23 @@ class Result(NamedTuple):
     output: str
 
     def to_txt(self):
-        return "{0}\t{1}".format(self.name, self.status)
+        return "{0}\t{1}".format(self.name, self.status.strip())
+
+    def to_html(self, doc, tag, text):
+        status = self.status.strip()
+        if status == "ok":
+            style = "color:green"
+        else:
+            style = "color:red"
+        with tag("h3", style=style):
+            text("{0} {1}".format(self.name, status))
+        button = """<button onclick="toggle('{0}')">view output</button>""".format(
+            self.name
+        )
+        doc.asis(button)
+        with tag("div", id=self.name, style="display:none;"):
+            with tag("pre"):
+                text(self.output)
 
 
 class Report(NamedTuple):
@@ -19,6 +50,13 @@ class Report(NamedTuple):
 
     def to_txt(self):
         return "\n".join([res.to_txt() for res in self.results])
+
+    def to_html(self):
+        doc, tag, text = yattag.Doc().tagtext()
+        doc.asis(TOGGLE_JS)
+        for res in self.results:
+            res.to_html(doc, tag, text)
+        return doc.getvalue()
 
 
 class CmpSpec(NamedTuple):
@@ -84,13 +122,26 @@ class Test(unittest.TestCase):
             self.assertEqual(report.results[1].status, "bad_output")
 
             print(report.to_txt())
+            print(report.to_html())
+
+    def test_example_comparison_output(self):
+        report_spec = dir_to_ReportSpec("example_comparison_outputs")
+        report = report_spec.get_report()
+        print(report.to_txt())
+        print(report.to_html())
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--output_dir", type=str, required=True)
+    parser.add_argument("--format", type=str, choices=["txt", "html"], required=True)
     args = parser.parse_args()
 
     report_spec = dir_to_ReportSpec(args.output_dir)
     report = report_spec.get_report()
-    print(report.to_txt())
+    if args.format == "txt":
+        print(report.to_txt())
+    elif args.format == "html":
+        print(report.to_html())
+    else:
+        raise Exception("unknown format {0}".format(args.format))
