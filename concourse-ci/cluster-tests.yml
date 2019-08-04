@@ -7,6 +7,8 @@ inputs:
   - name: IC
   - name: IC_master
   - name: IC_operations
+outputs:
+  - name: comparison_outputs
 run:
   path: bash
   args: [ "IC_operations/concourse-ci/cluster-tests.sh" ]

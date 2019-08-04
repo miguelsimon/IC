@@ -7,7 +7,7 @@
     * [fly execute for cluster tests](#fly-execute-for-cluster-tests)
     * [building the job artifact](#building-the-job-artifact)
   * [Job specification](#job-specification)
-    * [run tests](#run-tests)
+    * [run unit tests](#run-unit-tests)
     * [command line usage](#command-line-usage)
 
 # Overview
@@ -72,17 +72,22 @@ Birds-eye overview of the current setup:
 
 ### fly execute for cluster tests
 
-To test the `cluster-tests.sh` script it's convenient to launch it using local content; you can do this via fly execute (if you've got the proper credentials); the following example uses an IC_master checkout to populate both the IC and IC_master inputs to the script:
+To test the `cluster-tests.sh` script it's convenient to launch it using local content; you can do this via fly execute (if you've got the proper credentials); the following example uses an IC_master checkout to populate both the IC and IC_master inputs to the script, and leaves results in the `comparison_outputs` directory:
 
 ```
+mkdir comparison_outputs
+
 SSH_PRIVATE_KEY=$(cat credentials/key_concourse) \
   fly -t remote execute \
     --include-ignored \
     --input IC=~/IC_master \
     --input IC_master=~/IC_master \
     --input IC_operations=../ \
+    --output comparison_outputs=./comparison_outputs \
     --config cluster-tests.yml
 ```
+
+The `comparison_outputs/index.html` page contains a summary of the comparisons, and the raw comparison outputs as well.
 
 ## Job specification
 
@@ -97,7 +102,7 @@ The approach I'm taking is:
 2. use the specification to build a directory locally with all the necessary stuff (scripts, checked out source etc) so it can be inspected
 3. push the directory to the cluster, submit the jobs
 
-### run tests
+### run unit tests
 
 `make test`
 

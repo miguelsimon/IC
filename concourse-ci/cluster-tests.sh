@@ -43,8 +43,12 @@ rsync \
   -e "ssh -i ../../ssh_key -o StrictHostKeyChecking=no" \
   -vzr \
   icdev@majorana1.ific.uv.es:/data_extra2/icdev/miguel_scratch/comparison_outputs \
-  .
+  ../../
 
 python3 -m assemble_jobs.reports \
-  --output_dir comparison_outputs \
+  --output_dir ../../comparison_outputs \
   --format txt
+
+python3 -m assemble_jobs.reports \
+  --output_dir ../../comparison_outputs \
+  --format html > ../../comparison_outputs/index.html
