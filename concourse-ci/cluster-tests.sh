@@ -51,4 +51,6 @@ python3 -m assemble_jobs.reports \
 
 python3 -m assemble_jobs.reports \
   --output_dir ../../comparison_outputs \
-  --format html > ../../comparison_outputs/index.html
+  --format html > ./index.html
+  
+mv ./index.html ../../comparison_outputs/index.html
