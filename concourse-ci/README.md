@@ -43,6 +43,9 @@ The easiest way to understand what's going on is just to open a test PR to the m
 
 * [docker-compose](https://www.digitalocean.com/community/tutorials/how-to-install-docker-compose-on-ubuntu-18-04)
 * make ie if you're on some unix flavor you're fine
+* required credentials are text files that belong in a `credentials` directory which is .gitignored to avoid committing credentials; for a local deploy, these are:
+  * `credentials/github_access_token` a github access token to write PR status back to github
+  * `credentials/key_concourse` is an ssh private key which lets the `icdev` user access the majorana cluster
 
 These steps must be executed from within this directory:
 
