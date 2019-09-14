@@ -75,10 +75,10 @@ Birds-eye overview of the current setup:
 
 ### fly execute for cluster tests
 
-To test the `cluster-tests.sh` script it's convenient to launch it using local content; you can do this via fly execute (if you've got the proper credentials); the following example uses an IC_master checkout to populate both the IC and IC_master inputs to the script, and leaves results in the `comparison_outputs` directory:
+To test the `simple-cluster-tests.sh` script it's convenient to launch it using local content; you can do this via fly execute (if you've got the proper credentials); the following example uses an IC_master checkout to populate both the IC and IC_master inputs to the script, and leaves results in the `outputs` directory:
 
 ```
-mkdir comparison_outputs
+mkdir outputs
 
 SSH_PRIVATE_KEY=$(cat credentials/key_concourse) \
   fly -t remote execute \
@@ -86,11 +86,9 @@ SSH_PRIVATE_KEY=$(cat credentials/key_concourse) \
     --input IC=~/IC_master \
     --input IC_master=~/IC_master \
     --input IC_operations=../ \
-    --output comparison_outputs=./comparison_outputs \
-    --config cluster-tests.yml
+    --output outputs=./outputs \
+    --config simple-cluster-tests.yml
 ```
-
-The `comparison_outputs/index.html` page contains a summary of the comparisons, and the raw comparison outputs as well.
 
 ## Job specification
 
