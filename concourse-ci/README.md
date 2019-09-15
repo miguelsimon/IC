@@ -1,14 +1,15 @@
 * [Overview](#overview)
 * [Usage](#usage)
-  * [Concourse](#concourse)
+  * [Concourse server setup](#concourse-server-setup)
     * [Online demo version](#online-demo-version)
     * [Walkthrough for executing concourse locally](#walkthrough-for-executing-concourse-locally)
     * [Running on a server](#running-on-a-server)
-    * [fly execute for cluster tests](#fly-execute-for-cluster-tests)
-    * [building the job artifact](#building-the-job-artifact)
-  * [Job specification](#job-specification)
-    * [run unit tests](#run-unit-tests)
-    * [command line usage](#command-line-usage)
+  * [Developing cluster tests](#developing-cluster-tests)
+    * [running the test script via the command line](#running-the-test-script-via-the-command-line)
+  * [setting the concourse pipeline](#setting-the-concourse-pipeline)
+    * [running locally](#running-locally)
+    * [running in production](#running-in-production)
+  * [updating the concourse pipeline](#updating-the-concourse-pipeline)
 
 # Overview
 
@@ -17,17 +18,16 @@ Proof of concept is up at [https://ci.ific-invisible-cities.com/](https://ci.ifi
 This sets up an example CI pipeline for the invisible cities project. The idea is that, whenever a pull request to a [protected branch](https://help.github.com/en/articles/about-protected-branches) happens:
 
 1. the CI runs the unit tests (currently what your travis CI runs) and errors out if they fail
-2. if unit tests pass, the CI submits a job to the majorana cluster that performs sanity checks; a report is generated and put somewhere (eg. a gce bucket)
+2. if unit tests pass, the CI submits a job to the majorana cluster that performs sanity checks; a report is generated and put somewhere (an ific http server)
 3. If the sanity checks also pass, the CI marks the PR as approved in github and the merge can now be performed.
 
 I set this up using [concourse](https://concourse-ci.org/) because:
 * as a side effect of dragging my current company's devs into the 19th century, I can now set up continuous integration environments based on concourse in my sleep
 * concourse is awesome; it does have a learning curve (as do all CI tools) but it's very flexible and forces you to decouple stuff in a way that makes deploying in cloud environments easy.
 
-
 # Usage
 
-## Concourse
+## Concourse server setup
 
 ### Online demo version
 
@@ -73,12 +73,27 @@ Birds-eye overview of the current setup:
 * I'm running it on a trial google compute engine VM (google cloud is a very sane cloud provider when compared to others *cough* amazon *cough*)
 * access control is via username - password now, we'd delegate access control to github via oauth to avoid operational hassles
 
-### fly execute for cluster tests
+## Developing cluster tests
 
-To test the `cluster-tests.sh` script it's convenient to launch it using local content; you can do this via fly execute (if you've got the proper credentials); the following example uses an IC_master checkout to populate both the IC and IC_master inputs to the script, and leaves results in the `comparison_outputs` directory:
+** Code in the [assemble_jobs](assemble_jobs) directory is meant for a later stage and should't be used for now**
+
+An ssh script called [simple-cluster-tests.sh](simple-cluster-tests.sh) is responsible for:
+1. copying the required context to the majorana cluster
+  * the PR code for the IC repo
+  * the master code for the IC repo
+  * the scripts that submit the jobs, found in the [jobs](jobs) directory
+2. submitting the jobs on majorana and waiting for them to complete
+3. fetching the job outputs from majorana via rsync
+4. **Not yet implemented** Running the comparison functions on the outputs and generating a report.
+
+This script is meant to be called from a concourse pipeline.
+
+### running the test script via the command line
+
+To test the `simple-cluster-tests.sh` script it's convenient to launch it using local content; you can do this via fly execute (if you've got the proper credentials); the following example uses an IC_master checkout to populate both the IC and IC_master inputs to the script, and leaves results in the `outputs` directory:
 
 ```
-mkdir comparison_outputs
+mkdir outputs
 
 SSH_PRIVATE_KEY=$(cat credentials/key_concourse) \
   fly -t remote execute \
@@ -86,40 +101,26 @@ SSH_PRIVATE_KEY=$(cat credentials/key_concourse) \
     --input IC=~/IC_master \
     --input IC_master=~/IC_master \
     --input IC_operations=../ \
-    --output comparison_outputs=./comparison_outputs \
-    --config cluster-tests.yml
+    --output outputs=./outputs \
+    --config simple-cluster-tests.yml
 ```
 
-The `comparison_outputs/index.html` page contains a summary of the comparisons, and the raw comparison outputs as well.
+### setting the concourse pipeline
 
-## Job specification
+The [pr-pipeline.yml](pr-pipeline.yml) script contains the pipeline definition needed to tell the concourse server how and when to invoke the cluster tests script.
 
-There's a lot of configuration involved in managing the tests and it's probably going to get worse when we want to test against other conda versions, add fancier tests, etc. Life's too short to deal with this by hand.
+The [Makefile](Makefile) contains the commands and required files needed to configure the pipelines on the concourse server.
 
-It's a pretty heavyweight approach but it's the fastest way, because:
-* I use the python typesystem to catch bugs
-* when things get complicated I can easily do fancy stuff like automatically calculate job dependencies and express these to pbs to parallelize this as much as possible
+#### running locally
 
-The approach I'm taking is:
-1. specify the desired configuration in a python dsl, see [assemble_jobs/miguel_jobs.py](assemble_jobs/miguel_jobs.py) for an example (work in progress as I don't fully understand the IC system yet)
-2. use the specification to build a directory locally with all the necessary stuff (scripts, checked out source etc) so it can be inspected
-3. push the directory to the cluster, submit the jobs
+`make set_local_pr_pipeline` will upload the pipeline to the concourse server running on localhost.
 
-### run unit tests
+#### running in production
 
-`make test`
+`make set_pr_pipeline` will upload the pipeline to the production server.
 
-### command line usage
+### updating the concourse pipeline
 
-Let's assume you've got a checkout of IC in `~/IC_master`. You can compile the artifact (using the same directory for both the PR and master version) like so:
+If you make changes to the pipeline itself (eg. modifying the pr-pipeline.yml or cluster-tests.yml files) `make set_pr_pipeline` will apply those changes.
 
-```
-make env_ok #ensure python env is up
-mkdir job
-
-env/bin/python -m assemble_jobs.miguel_jobs \
-  --master_dir ~/IC_master \
-  --pr_dir ~/IC_master \
-  --city_conf_dir conf \
-  --target_dir job
-```
+If you make changes to the code, committing and pushing your changes is enough; the concourse pipeline will detect the changes in the code and automatically rebuild the test image.
