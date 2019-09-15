@@ -70,7 +70,7 @@ jobs:
       status: pending
       context: cluster-tests
   - task: cluster-tests
-    file: IC/concourse-ci/cluster-tests.yml
+    file: IC/concourse-ci/simple-cluster-tests.yml
     params:
       SSH_PRIVATE_KEY: ((SSH_PRIVATE_KEY))
   on_success:
