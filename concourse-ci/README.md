@@ -75,13 +75,13 @@ Birds-eye overview of the current setup:
 
 ## Developing cluster tests
 
-** Code in the [assemble_jobs](assemble_jobs) directory is meant for a later stage and should't be used for now**
+**Code in the [assemble_jobs](assemble_jobs) directory is meant for a later stage and should't be used for now**
 
 An ssh script called [simple-cluster-tests.sh](simple-cluster-tests.sh) is responsible for:
 1. copying the required context to the majorana cluster
-  * the PR code for the IC repo
-  * the master code for the IC repo
-  * the scripts that submit the jobs, found in the [jobs](jobs) directory
+    * the PR code for the IC repo
+    * the master code for the IC repo
+    * the scripts that submit the jobs, found in the [jobs](jobs) directory
 2. submitting the jobs on majorana and waiting for them to complete
 3. fetching the job outputs from majorana via rsync
 4. **Not yet implemented** Running the comparison functions on the outputs and generating a report.
