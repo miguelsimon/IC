@@ -11,4 +11,4 @@ export PYTHONPATH="$ICTDIR:$PYTHONPATH"
 city irene \
     -i /data_extra2/mmkekic/example_inputs/run_6971_0009_trigger1_waveforms.h5 \
     -o /data_extra2/icdev/miguel_scratch/outputs/pr_run_6971_0009_trigger1_pmaps.h5  \
-    /data_extra2/icdev/miguel_scratch/irene.conf
+    /data_extra2/icdev/miguel_scratch/jobs/irene.conf

@@ -42,13 +42,6 @@ rsync \
   IC_operations/concourse-ci/jobs \
   icdev@majorana1.ific.uv.es:/data_extra2/icdev/miguel_scratch/
 
-rsync \
-  -e "ssh -i ssh_key -o StrictHostKeyChecking=no" \
-  -vzr \
-  --delete \
-  IC_operations/concourse-ci/irene.conf \
-  icdev@majorana1.ific.uv.es:/data_extra2/icdev/miguel_scratch/
-
 ssh \
   -i ssh_key \
   -o StrictHostKeyChecking=no \
