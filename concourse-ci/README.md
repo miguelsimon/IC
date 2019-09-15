@@ -5,10 +5,6 @@
     * [Walkthrough for executing concourse locally](#walkthrough-for-executing-concourse-locally)
     * [Running on a server](#running-on-a-server)
     * [fly execute for cluster tests](#fly-execute-for-cluster-tests)
-    * [building the job artifact](#building-the-job-artifact)
-  * [Job specification](#job-specification)
-    * [run unit tests](#run-unit-tests)
-    * [command line usage](#command-line-usage)
 
 # Overview
 
@@ -88,36 +84,4 @@ SSH_PRIVATE_KEY=$(cat credentials/key_concourse) \
     --input IC_operations=../ \
     --output outputs=./outputs \
     --config simple-cluster-tests.yml
-```
-
-## Job specification
-
-There's a lot of configuration involved in managing the tests and it's probably going to get worse when we want to test against other conda versions, add fancier tests, etc. Life's too short to deal with this by hand.
-
-It's a pretty heavyweight approach but it's the fastest way, because:
-* I use the python typesystem to catch bugs
-* when things get complicated I can easily do fancy stuff like automatically calculate job dependencies and express these to pbs to parallelize this as much as possible
-
-The approach I'm taking is:
-1. specify the desired configuration in a python dsl, see [assemble_jobs/miguel_jobs.py](assemble_jobs/miguel_jobs.py) for an example (work in progress as I don't fully understand the IC system yet)
-2. use the specification to build a directory locally with all the necessary stuff (scripts, checked out source etc) so it can be inspected
-3. push the directory to the cluster, submit the jobs
-
-### run unit tests
-
-`make test`
-
-### command line usage
-
-Let's assume you've got a checkout of IC in `~/IC_master`. You can compile the artifact (using the same directory for both the PR and master version) like so:
-
-```
-make env_ok #ensure python env is up
-mkdir job
-
-env/bin/python -m assemble_jobs.miguel_jobs \
-  --master_dir ~/IC_master \
-  --pr_dir ~/IC_master \
-  --city_conf_dir conf \
-  --target_dir job
 ```
