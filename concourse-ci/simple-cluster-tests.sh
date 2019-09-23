@@ -55,3 +55,9 @@ rsync \
   .
 
 ls outputs
+
+rsync \
+  -e "ssh -i ssh_key -o StrictHostKeyChecking=no" \
+  -vzr \
+  outputs \
+  icdev@html_repo:/downloads/
