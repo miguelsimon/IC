@@ -39,7 +39,7 @@ clean:
 .PHONY: fly_remote_login
 fly_remote_login:
 	fly -t remote login \
-	  -c https://ci.ific-invisible-cities.com
+	  -c https://gpu1next.ific.uv.es
 
 .PHONY: fly_execute
 fly_execute:
@@ -58,7 +58,7 @@ set_local_pr_pipeline: credentials/github_access_token credentials/key_concourse
 
 .PHONY: set_pr_pipeline
 set_pr_pipeline: credentials/github_access_token credentials/key_concourse
-	fly -t remote set-pipeline \
+	fly -t gpu1next set-pipeline \
     --pipeline IC-pull-request \
     --config pr-pipeline.yml \
 		-v "SSH_PRIVATE_KEY=$$(cat credentials/key_concourse)" \

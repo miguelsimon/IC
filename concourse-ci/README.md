@@ -13,7 +13,9 @@
 
 # Overview
 
-Proof of concept is up at [https://ci.ific-invisible-cities.com/](https://ci.ific-invisible-cities.com/). It's password protected, ask @mmkekic for access if you want to poke around, authorization for the real version would be mediated via oauth by membership in the [nextic github organization](https://github.com/nextic).
+**currently moving to [https://gpu1next.ific.uv.es](https://gpu1next.ific.uv.es), still need to sync docker compose file that @jocarbur is working on into this repo**
+
+Proof of concept is up at [https://gpu1next.ific.uv.es](https://gpu1next.ific.uv.es). It's password protected, ask @mmkekic for access if you want to poke around, authorization for the real version would be mediated via oauth by membership in the [nextic github organization](https://github.com/nextic).
 
 This sets up an example CI pipeline for the invisible cities project. The idea is that, whenever a pull request to a [protected branch](https://help.github.com/en/articles/about-protected-branches) happens:
 
@@ -31,7 +33,7 @@ I set this up using [concourse](https://concourse-ci.org/) because:
 
 ### Online demo version
 
-The concourse interface is up at [https://ci.ific-invisible-cities.com/](https://ci.ific-invisible-cities.com/).
+The concourse interface is up at [https://gpu1next.ific.uv.es/](https://gpu1next.ific.uv.es/).
 
 The easiest way to understand what's going on is just to open a test PR to the master branch in the [https://github.com/miguelsimon/IC](https://github.com/miguelsimon/IC) repo, you should see:
 * Merges are disallowed until the build passes
@@ -62,7 +64,7 @@ Voilà, you can now unpause the pipeline.
 
 ### Running on a server
 
-I've set it up at [https://ci.ific-invisible-cities.com/](https://ci.ific-invisible-cities.com/).
+I've set it up at [https://gpu1next.ific.uv.es/](https://gpu1next.ific.uv.es/).
 
 Doing that involves quite a bit of onerous and annoying details, dealing with dns, certificates, hosting etc. These are just annoying if you know what you're doing but require loads of time to learn all that boring trivia if you don't. I can talk to you guys and help you set it up in your context.
 
