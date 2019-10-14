@@ -58,7 +58,7 @@ set_local_pr_pipeline: credentials/github_access_token credentials/key_concourse
 
 .PHONY: set_pr_pipeline
 set_pr_pipeline: credentials/github_access_token credentials/key_concourse
-	fly -t gpu1next set-pipeline \
+	fly -t remote set-pipeline \
     --pipeline IC-pull-request \
     --config pr-pipeline.yml \
 		-v "SSH_PRIVATE_KEY=$$(cat credentials/key_concourse)" \
