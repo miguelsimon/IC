@@ -1,0 +1,5 @@
+._*
+.mypy_cache
+credentials
+env
+env_ok
